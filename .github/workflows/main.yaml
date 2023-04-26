@@ -1,0 +1,57 @@
+name: Development
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test: 
+    runs-on: ubuntu-latest
+
+    steps:
+  #add a step to checkout the code  
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Build and test
+      run: npm run build && npm run test
+      
+    - name: Deploy to production
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        # your deployment script or command here
+
+    # add a new step to install .NET SDK
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '7.0.x'
+
+    # add a new step to test the solution
+    - name: Test the solution
+      run: dotnet test
+
+    # add a new step to build the entire solution with Release configuration
+    - name: Build the solution
+      run: dotnet build --configuration Release
+
+    # add a new step to test the solution with Release configuration
+    - name: Test the solution
+      run: dotnet test --configuration Release
+
+    # add a new step to publish the src/WebApi with Release configuration 
+    - name: Publish the WebApi project
+      run: dotnet publish src/WebApi --configuration Release --output ./publish
+    
+    
+
